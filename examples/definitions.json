@@ -1,0 +1,178 @@
+[{
+  "database": {
+    "public": {
+      "tenant": {
+        "columns": {
+          "tenant_id": "uuid",
+          "date_created": "timestamp",
+          "date_modified": "timestamp",
+          "name": "text"
+        },
+        "primaryKey": {
+          "name": "tenant_pkey",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      }
+    },
+    "tenant-1": {
+      "client": {
+        "columns": {
+          "client_id": "uuid",
+          "date_created": "timestamp",
+          "date_modified": "timestamp",
+          "name": "text",
+          "special_key_1": "number"
+        },
+        "primaryKey": {
+          "name": "client_pkey",
+          "columns": [
+            "client_id"
+          ]
+        }
+      },
+      "project": {
+        "columns": {
+          "project_id": "uuid",
+          "date_created": "timestamp",
+          "date_modified": "timestamp",
+          "name": "text",
+          "client_id": "uuid"
+        },
+        "primaryKey": {
+          "name": "project_pkey",
+          "columns": [
+            "project_id"
+          ]
+        }
+      }
+    },
+    "tenant-2": {
+      "client": {
+        "columns": {
+          "client_id": "uuid",
+          "date_created": "timestamp",
+          "date_modified": "timestamp",
+          "name": "text",
+          "special_key_2": "number"
+        },
+        "primaryKey": {
+          "name": "client_pkey",
+          "columns": [
+            "client_id"
+          ]
+        }
+      }
+    }
+  },
+  "examples": [{
+    "query": {
+      "qt": "insert",
+      "into": "tenant",
+      "columns": [
+        "date_created",
+        "date_modified",
+        "name"
+      ],
+      "valuesPath": "body"
+    },
+    "incoming": {
+      "body": [{
+        "name": "My Name"
+      }, {
+        "name": "My Other Name",
+        "date_created": "2018-06-02"
+      }]
+    }
+  }, {
+    "query": {
+      "qt": "insert",
+      "into": "\"tenant-{{query.tenant_id}}\".client",
+      "valuesPath": "body",
+      "upsert": true
+    },
+    "incoming": {
+      "query": {
+        "tenant_id": 2
+      },
+      "body": {
+        "name": "George Orwell",
+        "special_key_1": 11,
+        "special_key_2": 22
+      }
+    }
+  }, {
+    "query": {
+      "qt": "each",
+      "path": "body",
+      "query": {
+        "qt": "insert",
+        "with": {
+          "alias": "cl",
+          "query": {
+            "qt": "insert",
+            "into": "\"tenant-{{$parentContext.query.tenant_id}}\".client",
+            "valuesPath": "",
+            "returning": "client_id"
+          }
+        },
+        "into": "\"tenant-{{$parentContext.query.tenant_id}}\".project",
+        "valuesPath": "projects",
+        "defaultValues": {
+          "client_id": "cl.client_id"
+        }
+      }
+    },
+    "incoming": {
+      "query": {
+        "tenant_id": 1
+      },
+      "body": [{
+        "name": "George Orwell",
+        "special_key_2": 22,
+        "projects": {
+          "name": "1984"
+        }
+      }, {
+        "name": "George Lucas",
+        "special_key_2": 78,
+        "projects": [{
+          "name": "Star Wars"
+        }, {
+          "name": "Indiana Jones"
+        }]
+      }]
+    }
+  }, {
+    "query": {
+      "qt": "update",
+      "table": "\"tenant-1\".project",
+      "where": "project_id = {{value path.id}}",
+      "valuesPath": "body.toUpdate"
+    },
+    "incoming": {
+      "path": {
+        "id": 2
+      },
+      "body": {
+        "toUpdate": {
+          "client_id": 12,
+          "name": "Project Awesome"
+        }
+      }
+    }
+  }, {
+    "query": {
+      "qt": "delete",
+      "from": "\"tenant-1\".project",
+      "where": "project_id = {{value path.id}}",
+      "returning": "*"
+    },
+    "incoming": {
+      "path": {
+        "id": 48
+      }
+    }
+  }]
+}]
