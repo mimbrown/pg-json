@@ -1,7 +1,7 @@
 {
-  "name": "pg-server",
+  "name": "pg-json",
   "version": "1.0.0",
-  "description": "Query-writer for postgres backend",
+  "description": "Define PostgreSQL queries via JSON and render them on the fly.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
