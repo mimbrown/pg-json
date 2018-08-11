@@ -4,16 +4,32 @@
   "description": "Define PostgreSQL queries via JSON and render them on the fly.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/sql-commands.js"
   },
-  "author": "",
+  "author": {
+    "name": "Michael Brown"
+  },
+  "keywords": [
+    "pg",
+    "json",
+    "sql"
+  ],
   "license": "ISC",
   "dependencies": {
-    "handlebars": "^4.0.10",
+    "handlebars": "^4.0.11",
+    "lodash": "^4.17.10",
     "object-path": "^0.11.4",
-    "pg": "^7.2.0"
+    "pg": "^7.4.3",
+    "uuid": "^3.3.2"
   },
   "optionalDependencies": {
     "commander": "^2.15.1"
+  },
+  "devDependencies": {
+    "dotenv": "^6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mimbrown/pg-json"
   }
 }
