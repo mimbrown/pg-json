@@ -1,0 +1,151 @@
+[
+  {
+    "name": "Insertions",
+    "tests": [
+      {
+        "description": "should insert a movie_series record",
+        "query": {
+          "qt": "insert",
+          "into": "movie_series",
+          "valuesPath": "body",
+          "returning": "id",
+          "returnOptions": {
+            "singleRow": true,
+            "singleKey": "id"
+          }
+        },
+        "data": {
+          "body": {
+            "name": "Indiana Jones"
+          }
+        },
+        "returns": 1
+      },
+      {
+        "description": "should insert two movie_series records",
+        "query": {
+          "qt": "insert",
+          "into": "movie_series",
+          "valuesPath": "body",
+          "returning": "*"
+        },
+        "data": {
+          "body": [
+            {
+              "name": "Star Wars",
+              "junk": "Junk data"
+            },
+            {
+              "name": "Lord of the Rings",
+              "otherJunk": "More junk data"
+            }
+          ]
+        },
+        "returns": [
+          {
+            "id": 2,
+            "name": "Star Wars"
+          },
+          {
+            "id": 3,
+            "name": "Lord of the Rings"
+          }
+        ]
+      },
+      {
+        "description": "should insert into both tables",
+        "query": {
+          "qt": "each",
+          "query": {
+            "qt": "series",
+            "queries": [
+              {
+                "query": {
+                  "qt": "insert",
+                  "into": "movie_series",
+                  "valuesPath": "",
+                  "returning": "id",
+                  "returnOptions": {
+                    "singleKey": "id",
+                    "singleRow": true
+                  }
+                },
+                "name": "movie_series_id",
+                "return": true
+              },
+              {
+                "query": {
+                  "qt": "insert",
+                  "into": "movie",
+                  "valuesPath": "movies",
+                  "defaultValues": {
+                    "movie_series_id": "{{safe $returned.movie_series_id}}"
+                  },
+                  "returning": "*"
+                },
+                "return": "movies"
+              }
+            ]
+          },
+          "path": "body"
+        },
+        "data": {
+          "body": [
+            {
+              "name": "The Chronicles of Narnia",
+              "movies": [
+                {
+                  "name": "The Lion, the Witch, and the Wardrobe"
+                },
+                {
+                  "name": "Prince Caspian"
+                }
+              ]
+            },
+            {
+              "name": "The Pirates of the Carribean",
+              "movies": [
+                {
+                  "name": "The Curse of the Black Pearl"
+                }
+              ]
+            }
+          ]
+        },
+        "returns": [
+          {
+            "movie_series_id": 4,
+            "movies": [
+              {
+                "id": 1,
+                "movie_series_id": 4,
+                "name": "The Lion, the Witch, and the Wardrobe"
+              },
+              {
+                "id": 2,
+                "movie_series_id": 4,
+                "name": "Prince Caspian"
+              }
+            ]
+          },
+          {
+            "movie_series_id": 5,
+            "movies": [
+              {
+                "id": 3,
+                "movie_series_id": 5,
+                "name": "The Curse of the Black Pearl"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Select",
+    "tests": [
+
+    ]
+  }
+]

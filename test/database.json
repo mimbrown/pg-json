@@ -1,0 +1,29 @@
+{
+  "temp_json_test_schema": {
+    "movie_series": {
+      "columns": {
+        "id": "integer",
+        "name": "text"
+      },
+      "primaryKey": {
+        "columns": [
+          "id"
+        ],
+        "name": "movie_series_pkey"
+      }
+    },
+    "movie": {
+      "columns": {
+        "id": "integer",
+        "movie_series_id": "integer",
+        "name": "text"
+      },
+      "primaryKey": {
+        "columns": [
+          "id"
+        ],
+        "name": "movie_pkey"
+      }
+    }
+  }
+}
